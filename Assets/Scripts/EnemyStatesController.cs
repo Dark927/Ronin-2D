@@ -10,7 +10,9 @@ public class EnemyStatesController : MonoBehaviour
 
     #region Parameters 
 
+    Enemy enemy;
     Animator animator;
+    EnemyWeapon weapon;
     bool isDeadAnimation = false;
 
     #endregion
@@ -24,12 +26,24 @@ public class EnemyStatesController : MonoBehaviour
 
     private void Awake()
     {
+        enemy = GetComponent<Enemy>();
         animator = GetComponent<Animator>();
+        weapon = GetComponentInChildren<EnemyWeapon>();
     }
 
     private void Update()
     {
         CheckDeadState();
+
+        if (!isDeadAnimation)
+        {
+            animator.SetFloat("Speed", enemy.ActualSpeed);
+        }
+    }
+
+    public void SetAttackState()
+    {
+        animator.SetTrigger("Attack");
     }
 
     private void CheckDeadState()
@@ -56,6 +70,7 @@ public class EnemyStatesController : MonoBehaviour
 
     public void SetDeadState()
     {
+        animator.SetFloat("Speed", 0);
         animator.SetBool("Dead", true);
         isDeadAnimation = true;
     }

@@ -87,7 +87,7 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0.25
+  - time: 0.2125
     functionName: EnableBladeDamage
     data: 
     objectReferenceParameter: {fileID: 0}

@@ -10,17 +10,23 @@ public class PlayerController : MonoBehaviour
 
     #region Parameters 
 
+    [Space]
     [Header("Stats Settings")]
     [Space]
+
+    [SerializeField] float basicHP = 25f;
     [SerializeField] float basicSpeed = 4f;
     [SerializeField] float basicJumpForce = 10f;
 
     float actualSpeed = 0;
+    float actualHP;
     bool isLookRight = true;
     bool isJumped = false;
 
     Rigidbody2D rb;
     RoninBlade roninBlade;
+
+    Vector2 movementBounds = new(-22, 10);
 
     #endregion
 
@@ -37,6 +43,11 @@ public class PlayerController : MonoBehaviour
         roninBlade = GetComponentInChildren<RoninBlade>();
     }
 
+    private void Start()
+    {
+        actualHP = basicHP;
+    }
+
     // Update is called once per frame
     private void Update()
     {
@@ -44,7 +55,6 @@ public class PlayerController : MonoBehaviour
         {
             Movement();
         }
-
     }
 
     private void Movement()
@@ -57,6 +67,8 @@ public class PlayerController : MonoBehaviour
     {
         float horizontalInput = Input.GetAxisRaw("Horizontal");
 
+        horizontalInput = CheckOutOfBounds(horizontalInput);
+
         bool isSwapRight = (horizontalInput > 0) && !isLookRight;
         bool isSwapLeft = (horizontalInput < 0) && isLookRight;
 
@@ -68,6 +80,19 @@ public class PlayerController : MonoBehaviour
 
         actualSpeed = horizontalInput * basicSpeed;
         transform.Translate(Vector2.right * actualSpeed * Time.deltaTime);
+    }
+
+    private float CheckOutOfBounds(float horizontalInput)
+    {
+        bool outLeftBound = (transform.position.x <= movementBounds.x) && horizontalInput < 0;
+        bool outRightBound = (transform.position.x >= movementBounds.y) && horizontalInput > 0;
+
+        if (outLeftBound || outRightBound)
+        {
+            horizontalInput = 0;
+        }
+
+        return horizontalInput;
     }
 
     private void Jump()
@@ -101,6 +126,12 @@ public class PlayerController : MonoBehaviour
 
     #region Public Methods
 
+    public bool IsJumped
+    {
+        get { return isJumped; }
+        set { isJumped = value; }
+    }
+
     public float GetActualSpeed()
     {
         return Mathf.Abs(actualSpeed);
@@ -116,10 +147,9 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
-    public bool IsJumped
+    public void TakeDamage(float damage)
     {
-        get { return isJumped; }
-        set { isJumped = value; }
+        actualHP -= damage;
     }
 
     #endregion
