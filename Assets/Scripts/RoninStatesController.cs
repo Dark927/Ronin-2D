@@ -5,18 +5,89 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerController), typeof(Animator))]
 public class RoninStatesController : MonoBehaviour
 {
+    // --------------------------------------------------------------------------
+    // Parameters
+    // --------------------------------------------------------------------------
+
+    #region Parameters
+
     PlayerController player;
+    RoninBlade blade;
     Animator animator;
+
+    #endregion
+
+
+    // --------------------------------------------------------------------------
+    // Private Methods
+    // --------------------------------------------------------------------------
+
+    #region Private Methods
 
     private void Awake()
     {
-        animator = GetComponent<Animator>();
         player = GetComponent<PlayerController>();
+        blade = GetComponent<RoninBlade>();
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
+    {
+        UpdateSpeed();
+        JumpState();
+    }
+
+    private void UpdateSpeed()
     {
         animator.SetFloat("Speed", player.GetActualSpeed());
     }
+
+    private void JumpState()
+    {
+        if (player.IsJumped)
+        {
+            animator.SetTrigger("Jump");
+            animator.SetBool("Grounded", false);
+        }
+
+        if (player.IsFalling())
+        {
+            animator.SetTrigger("Fall");
+        }
+        else
+        {
+            animator.SetBool("Grounded", true);
+        }
+    }
+
+    #endregion
+
+
+    // --------------------------------------------------------------------------
+    // Public Methods
+    // --------------------------------------------------------------------------
+
+    #region Public Methods
+
+    public void AttackState()
+    {
+        switch (blade.AttackType)
+        {
+            case RoninAttackType.Attack_fast:
+                {
+                    animator.SetTrigger("Attack_fast");
+                }
+                break;
+
+
+            case RoninAttackType.Attack_heavy:
+                {
+                    animator.SetTrigger("Attack_heavy");
+                }
+                break;
+        }
+    }
+
+    #endregion
 }
