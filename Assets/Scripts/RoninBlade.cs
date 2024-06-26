@@ -16,8 +16,12 @@ public class RoninBlade : MonoBehaviour
 
     #region Parameters 
 
+    [SerializeField] float fastAttackDmg = 1f;
+    [SerializeField] float heavyAttackDmg = 3f;
+
     [SerializeField] Collider2D fastAttackCollider;
     [SerializeField] Collider2D heavyAttackCollider;
+    Collider2D currentAttackCol;
 
     bool _isAttack = false;
     RoninAttackType _attackType = RoninAttackType.Attack_fast;
@@ -35,18 +39,24 @@ public class RoninBlade : MonoBehaviour
 
     private void Awake()
     {
-        statesController = GetComponent<RoninStatesController>();
+        statesController = GetComponentInParent<RoninStatesController>();
     }
 
     // Update is called once per frame
     private void Update()
+    {
+        Attack();
+    }
+
+    private void Attack()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0) && !IsAttack)
         {
             IsAttack = true;
             AttackType = RoninAttackType.Attack_fast;
 
-            SetAttackColliderState(fastAttackCollider, true);
+            currentAttackCol = fastAttackCollider;
+            SetAttackState();
         }
 
         if (Input.GetKeyDown(KeyCode.Mouse1) && !IsAttack)
@@ -54,30 +64,14 @@ public class RoninBlade : MonoBehaviour
             IsAttack = true;
             AttackType = RoninAttackType.Attack_heavy;
 
-            SetAttackColliderState(heavyAttackCollider, true);
+            currentAttackCol = heavyAttackCollider;
+            SetAttackState();
         }
     }
 
-    private void EndFastAttack()
+    private void SetAttackState()
     {
-        IsAttack = false;
-        SetAttackColliderState(fastAttackCollider, false);
-    }
-
-    private void EndHeavyAttack()
-    {
-        IsAttack = false;
-        SetAttackColliderState(heavyAttackCollider, false);
-    }
-
-    private void SetAttackColliderState(Collider2D col, bool isActive)
-    {
-        col.gameObject.SetActive(isActive);
-
-        if(isActive)
-        {
-            statesController.AttackState();
-        }
+        statesController.AttackState(AttackType);
     }
 
     #endregion
@@ -99,6 +93,32 @@ public class RoninBlade : MonoBehaviour
     {
         get { return _isAttack; }
         set { _isAttack = value; }
+    }
+
+    public float GetAttackDmg()
+    {
+        return AttackType switch
+        {
+            RoninAttackType.Attack_fast => fastAttackDmg,
+            RoninAttackType.Attack_heavy => heavyAttackDmg,
+            _ => 0,
+        };
+    }
+
+    public void EndAttack()
+    {
+        IsAttack = false;
+        DisableDamage();
+    }
+    
+    public void EnableDamage()
+    {
+        currentAttackCol.gameObject.SetActive(true);
+    }
+
+    public void DisableDamage()
+    {
+        currentAttackCol.gameObject.SetActive(false);
     }
 
     #endregion

@@ -12,7 +12,6 @@ public class RoninStatesController : MonoBehaviour
     #region Parameters
 
     PlayerController player;
-    RoninBlade blade;
     Animator animator;
 
     #endregion
@@ -27,7 +26,6 @@ public class RoninStatesController : MonoBehaviour
     private void Awake()
     {
         player = GetComponent<PlayerController>();
-        blade = GetComponent<RoninBlade>();
         animator = GetComponent<Animator>();
     }
 
@@ -70,9 +68,9 @@ public class RoninStatesController : MonoBehaviour
 
     #region Public Methods
 
-    public void AttackState()
+    public void AttackState(RoninAttackType attackType)
     {
-        switch (blade.AttackType)
+        switch (attackType)
         {
             case RoninAttackType.Attack_fast:
                 {

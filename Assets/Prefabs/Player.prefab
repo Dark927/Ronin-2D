@@ -17,9 +17,9 @@ GameObject:
   - component: {fileID: 5045986732950530823}
   - component: {fileID: 961681380}
   - component: {fileID: 961681387}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -211,11 +211,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5045986732950530872}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc7c678f2bc81e14aba49258d252d700, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f6d07498a8476e44a7b8474f4314644, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fastAttackCollider: {fileID: 1118829834}
-  heavyAttackCollider: {fileID: 2138938169}
 --- !u!1001 &2488151246480206865
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -223,6 +221,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5045986732950530820}
     m_Modifications:
+    - target: {fileID: 2488151246693234472, guid: b19ba10b87f3ed748b889c68428dd905, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2488151246738457665, guid: b19ba10b87f3ed748b889c68428dd905, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -271,18 +273,77 @@ PrefabInstance:
       propertyPath: m_Name
       value: Blade
       objectReference: {fileID: 0}
+    - target: {fileID: 2488151247577288987, guid: b19ba10b87f3ed748b889c68428dd905, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b19ba10b87f3ed748b889c68428dd905, type: 3}
+--- !u!1 &1118829831 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2488151247577288982, guid: b19ba10b87f3ed748b889c68428dd905, type: 3}
+  m_PrefabInstance: {fileID: 2488151246480206865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1118829835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1118829831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8159c4a79b1c41841938880acc513176, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!61 &1118829834 stripped
 BoxCollider2D:
   m_CorrespondingSourceObject: {fileID: 2488151247577288987, guid: b19ba10b87f3ed748b889c68428dd905, type: 3}
   m_PrefabInstance: {fileID: 2488151246480206865}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1890543695 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2488151246738457694, guid: b19ba10b87f3ed748b889c68428dd905, type: 3}
+  m_PrefabInstance: {fileID: 2488151246480206865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &628889282293280188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1890543695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc7c678f2bc81e14aba49258d252d700, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fastAttackDmg: 1
+  heavyAttackDmg: 3
+  fastAttackCollider: {fileID: 1118829834}
+  heavyAttackCollider: {fileID: 2138938169}
 --- !u!4 &1890543696 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2488151246738457665, guid: b19ba10b87f3ed748b889c68428dd905, type: 3}
   m_PrefabInstance: {fileID: 2488151246480206865}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2138938165 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2488151246693234468, guid: b19ba10b87f3ed748b889c68428dd905, type: 3}
+  m_PrefabInstance: {fileID: 2488151246480206865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2138938170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2138938165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8159c4a79b1c41841938880acc513176, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!61 &2138938169 stripped
 BoxCollider2D:
   m_CorrespondingSourceObject: {fileID: 2488151246693234472, guid: b19ba10b87f3ed748b889c68428dd905, type: 3}

@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        roninBlade = GetComponent<RoninBlade>();
+        roninBlade = GetComponentInChildren<RoninBlade>();
     }
 
     // Update is called once per frame
