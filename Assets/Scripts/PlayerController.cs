@@ -22,9 +22,11 @@ public class PlayerController : MonoBehaviour
     float actualHP;
     bool isLookRight = true;
     bool isJumped = false;
+    bool deadState = false;
 
     Rigidbody2D rb;
     RoninBlade roninBlade;
+    DamageFlash damageFlash;
 
     Vector2 movementBounds = new(-22, 10);
 
@@ -41,6 +43,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         roninBlade = GetComponentInChildren<RoninBlade>();
+        damageFlash = GetComponent<DamageFlash>();
     }
 
     private void Start()
@@ -51,6 +54,11 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        if(deadState)
+        {
+            return;
+        }
+
         if (!roninBlade.IsAttack)
         {
             Movement();
@@ -65,9 +73,22 @@ public class PlayerController : MonoBehaviour
 
     private void Run()
     {
+        // Get horizontal input from player
+
         float horizontalInput = Input.GetAxisRaw("Horizontal");
 
         horizontalInput = CheckOutOfBounds(horizontalInput);
+        ConfigureLookDirection(horizontalInput);
+
+        // Set new speed and move player
+
+        actualSpeed = horizontalInput * basicSpeed;
+        transform.Translate(Vector2.right * actualSpeed * Time.deltaTime);
+    }
+
+    private void ConfigureLookDirection(float horizontalInput)
+    {
+        // Check if swap is needed and swap look direction 
 
         bool isSwapRight = (horizontalInput > 0) && !isLookRight;
         bool isSwapLeft = (horizontalInput < 0) && isLookRight;
@@ -77,9 +98,6 @@ public class PlayerController : MonoBehaviour
             isLookRight = isSwapRight ? true : false;
             transform.localScale = new Vector2(-transform.localScale.x, transform.localScale.y);
         }
-
-        actualSpeed = horizontalInput * basicSpeed;
-        transform.Translate(Vector2.right * actualSpeed * Time.deltaTime);
     }
 
     private float CheckOutOfBounds(float horizontalInput)
@@ -149,7 +167,29 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if(deadState)
+        {
+            return;
+        }
+
+        // Apply damage if player not dead yet 
+
         actualHP -= damage;
+        damageFlash.Flash();
+
+        if(IsDead())
+        {
+            deadState = true;
+            actualSpeed = 0;
+            rb.simulated = false;
+
+            return;
+        }
+    }
+
+    public bool IsDead()
+    {
+        return actualHP <= 0;
     }
 
     #endregion

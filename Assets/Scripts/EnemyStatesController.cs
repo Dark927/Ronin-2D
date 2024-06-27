@@ -12,7 +12,6 @@ public class EnemyStatesController : MonoBehaviour
 
     Enemy enemy;
     Animator animator;
-    EnemyWeapon weapon;
     bool isDeadAnimation = false;
 
     #endregion
@@ -28,7 +27,6 @@ public class EnemyStatesController : MonoBehaviour
     {
         enemy = GetComponent<Enemy>();
         animator = GetComponent<Animator>();
-        weapon = GetComponentInChildren<EnemyWeapon>();
     }
 
     private void Update()
@@ -73,11 +71,6 @@ public class EnemyStatesController : MonoBehaviour
         animator.SetFloat("Speed", 0);
         animator.SetBool("Dead", true);
         isDeadAnimation = true;
-    }
-
-    public void SetDamagedState()
-    {
-        animator.SetTrigger("Damaged");
     }
 
     #endregion

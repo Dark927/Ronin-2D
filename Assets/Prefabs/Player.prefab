@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 5045986732950530823}
   - component: {fileID: 961681380}
   - component: {fileID: 961681387}
+  - component: {fileID: 961681386}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -188,6 +189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f78ed872690b2ad4ea62962771b88339, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  basicHP: 2
   basicSpeed: 4
   basicJumpForce: 5.5
 --- !u!114 &961681380
@@ -214,6 +216,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f6d07498a8476e44a7b8474f4314644, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &961681386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5045986732950530872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae15e1ffab7d8104c8754bbb1da895a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainFlashMaterial: {fileID: 2100000, guid: 5bf2b1c76f28ff240bb6f36da7d53a96, type: 2}
+  secondaryFlashMaterial: {fileID: 2100000, guid: 5bf2b1c76f28ff240bb6f36da7d53a96, type: 2}
+  flashDuration: 0.15
 --- !u!1001 &2488151246480206865
 PrefabInstance:
   m_ObjectHideFlags: 0

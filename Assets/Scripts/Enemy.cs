@@ -43,6 +43,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] EnemyWeapon weapon;
     EnemyStatesController statesController;
     Rigidbody2D rb;
+    DamageFlash damageFlash;
 
     #endregion
 
@@ -57,6 +58,7 @@ public class Enemy : MonoBehaviour
     {
         statesController = GetComponent<EnemyStatesController>();
         rb = GetComponent<Rigidbody2D>();
+        damageFlash = GetComponent<DamageFlash>();
     }
 
     private void Start()
@@ -88,14 +90,13 @@ public class Enemy : MonoBehaviour
 
     private void Movement()
     {
+        if (!activeSwapSide)
+        {
+            _actualSpeed = (weapon.IsInAttackRange()) ? 0 : basicSpeed;
+        }
 
         if (!isAttacking)
         {
-            if (!activeSwapSide)
-            {
-                _actualSpeed = (weapon.IsInAttackRange()) ? 0 : basicSpeed;
-            }
-
             CalculatePosition();
             ConfigureLookDirection();
         }
@@ -157,12 +158,14 @@ public class Enemy : MonoBehaviour
     public void TakeDamage(float damage, float pushForce = 1f, float stopTime = 0.5f)
     {
         _actualHP -= damage;
-        statesController.SetDamagedState();
+        damageFlash.Flash();
 
         StartCoroutine(StopMovementDelay(stopTime));
 
         if (_actualHP <= 0)
         {
+            damageFlash.Flash(true);
+
             _isDead = true;
             statesController.SetDeadState();
             rb.simulated = false;

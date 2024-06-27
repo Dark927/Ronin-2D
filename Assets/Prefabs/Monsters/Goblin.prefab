@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1660775160}
   - component: {fileID: 1660775163}
   - component: {fileID: 1660775162}
+  - component: {fileID: 952293993917137287}
   - component: {fileID: 1660775161}
   m_Layer: 0
   m_Name: Weapon
@@ -27,8 +28,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1660775159}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.1272, y: -0.0994, z: 0}
-  m_LocalScale: {x: 0.6336844, y: 0.27887166, z: 1}
+  m_LocalPosition: {x: -0.0029, y: -0.0167, z: 0}
+  m_LocalScale: {x: 0.8940001, y: 0.44417214, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1427903420315619577}
@@ -99,7 +100,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.37330925, y: 0.18345997}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -110,7 +111,33 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.2533815, y: 0.60740817}
+  m_EdgeRadius: 0
+--- !u!61 &952293993917137287
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1660775159}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.12578443, y: -0.16511121}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.74843115, y: 0.6697776}
   m_EdgeRadius: 0
 --- !u!114 &1660775161
 MonoBehaviour:
@@ -139,6 +166,7 @@ GameObject:
   - component: {fileID: 3258311059843540707}
   - component: {fileID: 8784611061900186830}
   - component: {fileID: 1133611279596951816}
+  - component: {fileID: 1748589941}
   m_Layer: 6
   m_Name: Goblin
   m_TagString: Untagged
@@ -312,3 +340,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40555ccc9d661d24d8d2580670d57b3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1748589941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427903420315619578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae15e1ffab7d8104c8754bbb1da895a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainFlashMaterial: {fileID: 2100000, guid: cd59f97e8ce1ed84c97d01198c20d68c, type: 2}
+  secondaryFlashMaterial: {fileID: 2100000, guid: 5bf2b1c76f28ff240bb6f36da7d53a96, type: 2}
+  flashDuration: 0.15
