@@ -192,5 +192,10 @@ public class PlayerController : MonoBehaviour
         return actualHP <= 0;
     }
 
+    public float GetHpRatio()
+    {
+        return actualHP / basicHP;
+    }
+
     #endregion
 }
