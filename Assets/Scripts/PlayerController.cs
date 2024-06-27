@@ -27,8 +27,10 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D rb;
     RoninBlade roninBlade;
     DamageFlash damageFlash;
+    GameManager gameManager;
 
     Vector2 movementBounds = new(-22, 10);
+
 
     #endregion
 
@@ -49,19 +51,35 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         actualHP = basicHP;
+        gameManager = FindObjectOfType<GameManager>();
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if(deadState)
+        if (deadState || gameManager.IsBlockedInput())
         {
             return;
         }
 
+        BladeAttack();
+
         if (!roninBlade.IsAttack)
         {
             Movement();
+        }
+    }
+
+    private void BladeAttack()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            roninBlade.Attack(RoninAttackType.Attack_fast);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            roninBlade.Attack(RoninAttackType.Attack_heavy);
         }
     }
 

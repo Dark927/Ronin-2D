@@ -42,33 +42,6 @@ public class RoninBlade : MonoBehaviour
         statesController = GetComponentInParent<RoninStatesController>();
     }
 
-    // Update is called once per frame
-    private void Update()
-    {
-        Attack();
-    }
-
-    private void Attack()
-    {
-        if (Input.GetKeyDown(KeyCode.Mouse0) && !IsAttack)
-        {
-            IsAttack = true;
-            AttackType = RoninAttackType.Attack_fast;
-
-            currentAttackCol = fastAttackCollider;
-            SetAttackState();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Mouse1) && !IsAttack)
-        {
-            IsAttack = true;
-            AttackType = RoninAttackType.Attack_heavy;
-
-            currentAttackCol = heavyAttackCollider;
-            SetAttackState();
-        }
-    }
-
     private void SetAttackState()
     {
         statesController.AttackState(AttackType);
@@ -83,6 +56,12 @@ public class RoninBlade : MonoBehaviour
 
     #region Public Methods
 
+    // -------------------------
+    // Getters and Setters
+    // -------------------------
+
+    #region Getters and Setters
+
     public RoninAttackType AttackType
     {
         get { return _attackType; }
@@ -93,6 +72,34 @@ public class RoninBlade : MonoBehaviour
     {
         get { return _isAttack; }
         set { _isAttack = value; }
+    }
+
+    #endregion
+
+    public void Attack(RoninAttackType type)
+    {
+        if(IsAttack)
+        {
+            return;
+        }
+
+        if (type == RoninAttackType.Attack_fast)
+        {
+            IsAttack = true;
+            AttackType = type;
+
+            currentAttackCol = fastAttackCollider;
+            SetAttackState();
+        }
+
+        else if (type == RoninAttackType.Attack_heavy)
+        {
+            IsAttack = true;
+            AttackType = type;
+
+            currentAttackCol = heavyAttackCollider;
+            SetAttackState();
+        }
     }
 
     public float GetAttackDmg()
@@ -110,7 +117,7 @@ public class RoninBlade : MonoBehaviour
         IsAttack = false;
         DisableDamage();
     }
-    
+
     public void EnableDamage()
     {
         currentAttackCol.gameObject.SetActive(true);

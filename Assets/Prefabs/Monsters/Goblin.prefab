@@ -326,7 +326,7 @@ MonoBehaviour:
   basicSpeed: 2.5
   basicDamage: 2
   attackReloadTime: 1.5
-  sideSwapDelay: 0.25
+  sideSwapDelay: 0.15
   weapon: {fileID: 1660775161}
 --- !u!114 &1133611279596951816
 MonoBehaviour:

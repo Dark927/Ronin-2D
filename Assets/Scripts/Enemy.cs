@@ -45,6 +45,8 @@ public class Enemy : MonoBehaviour
     Rigidbody2D rb;
     DamageFlash damageFlash;
 
+    GameObject targetPlayer;
+
     #endregion
 
 
@@ -63,6 +65,8 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
+        targetPlayer = FindObjectOfType<PlayerController>().gameObject;
+
         _actualHP = basicHP;
         _actualSpeed = basicSpeed;
         _actualDamage = basicDamage;
@@ -92,7 +96,8 @@ public class Enemy : MonoBehaviour
     {
         if (!activeSwapSide)
         {
-            _actualSpeed = (weapon.IsInAttackRange()) ? 0 : basicSpeed;
+            _actualSpeed = weapon.IsInAttackRange() ? 0 : basicSpeed;
+            _actualSpeed = IsNearPlayer() ? 0 : _actualSpeed;
         }
 
         if (!isAttacking)
@@ -104,9 +109,8 @@ public class Enemy : MonoBehaviour
 
     private void CalculatePosition()
     {
-        GameObject target = FindObjectOfType<PlayerController>().gameObject;
-        lookDirectionX = (target.transform.position.x - transform.position.x) > 0 ? 1 : -1;
-        Vector2 movement = Vector2.right * lookDirectionX * ActualSpeed * Time.deltaTime;
+        lookDirectionX = (targetPlayer.transform.position.x - transform.position.x) > 0 ? 1 : -1;
+        Vector2 movement = Vector2.right * lookDirectionX * _actualSpeed * Time.deltaTime;
 
         transform.Translate(movement);
     }
@@ -121,6 +125,11 @@ public class Enemy : MonoBehaviour
         {
             StartCoroutine(StopMovementDelay(sideSwapDelay, true));
         }
+    }
+
+    private bool IsNearPlayer()
+    {
+        return Mathf.Abs(targetPlayer.transform.position.x - transform.position.x) < 0.05;
     }
 
     IEnumerator StopMovementDelay(float stopTime, bool isSideSwap = false)
