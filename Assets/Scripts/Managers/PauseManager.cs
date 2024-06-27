@@ -10,8 +10,56 @@ public class PauseManager : MonoBehaviour
 
     #region Parameters
 
+    public static PauseManager instance;
+
     [SerializeField] GameObject pausePanelUI;
     bool isGamePaused = false;
+    bool isPausePanelActive = false;
+
+    #endregion
+
+
+    // --------------------------------------------------------------------------
+    // Private Methods
+    // --------------------------------------------------------------------------
+
+    #region Private Methods
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+        if (!isGamePaused && !isPausePanelActive)
+        {
+            Time.timeScale = 1f;
+        }
+    }
+
+    private void Update()
+    {
+        ConfigurePauseState();
+    }
+
+    private void ConfigurePauseState()
+    {
+        isPausePanelActive = pausePanelUI.activeInHierarchy;
+
+        if (!isGamePaused && isPausePanelActive)
+        {
+            PauseGame();
+        }
+        else if(isGamePaused && !isPausePanelActive)
+        {
+            UnPauseGame();
+        }
+    }
 
     #endregion
 
@@ -35,6 +83,7 @@ public class PauseManager : MonoBehaviour
         if(activatePausePanel)
         {
             pausePanelUI.SetActive(true);
+            isPausePanelActive = true;
         }
     }
 
@@ -46,6 +95,7 @@ public class PauseManager : MonoBehaviour
         if(deactivatePausePanel)
         {
             pausePanelUI.SetActive(false);
+            isPausePanelActive = false;
         }
     }
 
@@ -59,6 +109,11 @@ public class PauseManager : MonoBehaviour
         {
             PauseGame(usePausePanel);
         }
+    }
+
+    public bool PausePanelActive()
+    {
+        return isPausePanelActive;
     }
 
     #endregion

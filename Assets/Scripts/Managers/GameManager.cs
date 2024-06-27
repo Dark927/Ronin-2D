@@ -10,9 +10,10 @@ public class GameManager : MonoBehaviour
 
     #region Parameters
 
+    public static GameManager instance;
+
     // Pause parameters 
 
-    PauseManager pauseManager;
     bool enablePauseGame = true;
     bool blockedInput = false;
 
@@ -29,23 +30,34 @@ public class GameManager : MonoBehaviour
 
     #region Private Methods
 
+    private void Awake()
+    {
+        if(instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void Start()
     {
-        pauseManager = FindObjectOfType<PauseManager>();
         loadManager = FindObjectOfType<LoadManager>();
     }
 
     private void Update()
     {
         PauseSwitch();
+        blockedInput = PauseManager.instance.IsPause();
     }
 
     private void PauseSwitch()
     {
         if (Input.GetKeyDown(KeyCode.Escape) && enablePauseGame)
         {
-            pauseManager.SwitchPause(true);
-            blockedInput = pauseManager.IsPause();
+            PauseManager.instance.SwitchPause(true);
         }
     }
 
@@ -63,15 +75,10 @@ public class GameManager : MonoBehaviour
         return blockedInput;
     }
 
-    public void ExitGame()
-    {
-        Application.Quit();
-    }
-
     public void RestartGame()
     {
         loadManager.ReloadCurrentScene();
-        pauseManager.UnPauseGame();
+        PauseManager.instance.UnPauseGame(true);
     }
 
     #endregion

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviour
 {
@@ -27,7 +28,6 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D rb;
     RoninBlade roninBlade;
     DamageFlash damageFlash;
-    GameManager gameManager;
 
     Vector2 movementBounds = new(-22, 10);
 
@@ -51,13 +51,12 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         actualHP = basicHP;
-        gameManager = FindObjectOfType<GameManager>();
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if (deadState || gameManager.IsBlockedInput())
+        if (deadState || GameManager.instance.IsBlockedInput())
         {
             return;
         }
@@ -72,6 +71,13 @@ public class PlayerController : MonoBehaviour
 
     private void BladeAttack()
     {
+        // Check if pointer not over UI element
+
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             roninBlade.Attack(RoninAttackType.Attack_fast);
@@ -185,7 +191,7 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        if(deadState)
+        if (deadState)
         {
             return;
         }
@@ -195,7 +201,7 @@ public class PlayerController : MonoBehaviour
         actualHP -= damage;
         damageFlash.Flash();
 
-        if(IsDead())
+        if (IsDead())
         {
             deadState = true;
             actualSpeed = 0;
