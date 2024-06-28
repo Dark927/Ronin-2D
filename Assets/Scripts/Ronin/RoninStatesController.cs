@@ -14,7 +14,6 @@ public class RoninStatesController : MonoBehaviour
     PlayerController player;
     Animator animator;
 
-    bool isPlayerDead = false;
     bool isAnimationActive = false;
 
     #endregion
@@ -38,27 +37,9 @@ public class RoninStatesController : MonoBehaviour
         UpdateSpeed();
         JumpState();
 
-        PlayerDead();
-    }
-
-    private void PlayerDead()
-    {
-        if (!isPlayerDead && player.IsDead())
+        if(player.IsDead())
         {
-            animator.SetTrigger("Dead");
-            isPlayerDead = true;
-            isAnimationActive = true;
-        }
-
-        if (isAnimationActive)
-        {
-            AnimatorStateInfo animInfo = animator.GetCurrentAnimatorStateInfo(0);
-
-            if (animInfo.normalizedTime >= 1.0f && animInfo.IsName("Death"))
-            {
-                animator.speed = 0;
-                isAnimationActive = false;
-            }
+            DeadState();
         }
     }
 
@@ -82,6 +63,23 @@ public class RoninStatesController : MonoBehaviour
         else
         {
             animator.SetBool("Grounded", true);
+        }
+    }
+
+    public void DeadState()
+    {
+        animator.SetTrigger("Dead");
+        isAnimationActive = true;
+
+        if (isAnimationActive)
+        {
+            AnimatorStateInfo animInfo = animator.GetCurrentAnimatorStateInfo(0);
+
+            if (animInfo.normalizedTime >= 1.0f && animInfo.IsName("Death"))
+            {
+                animator.speed = 0;
+                isAnimationActive = false;
+            }
         }
     }
 

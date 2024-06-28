@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edf28cacd6d08a243916b11f0a91289b, type: 3}
+  m_Name: GoblinData
+  m_EditorClassIdentifier: 
+  type: 0
+  basicHP: 5
+  basicSpeed: 3.5
+  basicDamage: 2
+  attackReloadTime: 1.5

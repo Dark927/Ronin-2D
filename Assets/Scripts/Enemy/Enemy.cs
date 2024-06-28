@@ -2,6 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EnemyType
+{
+    Enemy_goblin = 0,
+
+    Enemy_firstIndex = 0,
+    Enemy_lastIndex = Enemy_goblin,
+    Enemy_typesCount = Enemy_lastIndex + 1
+}
+
 public class Enemy : MonoBehaviour
 {
     // --------------------------------------------------------------------------
@@ -14,10 +23,7 @@ public class Enemy : MonoBehaviour
     [Header("Stats Settings")]
     [Space]
 
-    [SerializeField] float basicHP = 5f;
-    [SerializeField] float basicSpeed = 4f;
-    [SerializeField] float basicDamage = 2f;
-    [SerializeField] float attackReloadTime = 1.5f;
+    [SerializeField] EnemyData stats;
 
 
     float _actualHP;
@@ -44,7 +50,6 @@ public class Enemy : MonoBehaviour
     EnemyStatesController statesController;
     Rigidbody2D rb;
     DamageFlash damageFlash;
-
     GameObject targetPlayer;
 
     #endregion
@@ -67,11 +72,11 @@ public class Enemy : MonoBehaviour
     {
         targetPlayer = FindObjectOfType<PlayerController>().gameObject;
 
-        _actualHP = basicHP;
-        _actualSpeed = basicSpeed;
-        _actualDamage = basicDamage;
+        _actualHP = stats.basicHP;
+        _actualSpeed = stats.basicSpeed;
+        _actualDamage = stats.basicDamage;
 
-        weapon.SetReloadTime(attackReloadTime);
+        weapon.SetReloadTime(stats.attackReloadTime);
     }
 
     private void Update()
@@ -88,22 +93,38 @@ public class Enemy : MonoBehaviour
         if (!isAttacking && weapon.ReadyToAttack())
         {
             isAttacking = true;
+            weapon.ChargeAttack();
             statesController.SetAttackState();
         }
     }
 
     private void Movement()
     {
-        if (!activeSwapSide)
-        {
-            _actualSpeed = weapon.IsInAttackRange() ? 0 : basicSpeed;
-            _actualSpeed = IsNearPlayer() ? 0 : _actualSpeed;
-        }
+        ConfigureSpeed();
 
         if (!isAttacking)
         {
             CalculatePosition();
             ConfigureLookDirection();
+        }
+    }
+
+    private void ConfigureSpeed()
+    {
+        // Configure checking input conditions
+
+        if (GameManager.instance.IsBlockedInput())
+        {
+            _actualSpeed = 0;
+            return;
+        }
+
+        // Configure checking player and weapon conditions
+
+        if (!activeSwapSide)
+        {
+            _actualSpeed = weapon.IsInAttackRange() ? 0 : stats.basicSpeed;
+            _actualSpeed = IsNearPlayer() ? 0 : _actualSpeed;
         }
     }
 
@@ -139,7 +160,7 @@ public class Enemy : MonoBehaviour
 
         yield return new WaitForSeconds(stopTime);
 
-        _actualSpeed = basicSpeed;
+        _actualSpeed = stats.basicSpeed;
 
         if (isSideSwap)
         {
@@ -164,6 +185,34 @@ public class Enemy : MonoBehaviour
 
     #region Public Methods
 
+    // -------------------------
+    // Getters and Setters
+    // -------------------------
+
+    #region Getters and Setters
+
+    public float ActualSpeed
+    {
+        get { return _actualSpeed; }
+    }
+
+    public bool IsDead
+    {
+        get { return _isDead; }
+    }
+
+    public EnemyType Type
+    {
+        get { return stats.type; }
+    }
+
+    public bool IsAttack
+    {
+        get { return isAttacking; }
+    }
+
+    #endregion
+
     public void TakeDamage(float damage, float pushForce = 1f, float stopTime = 0.5f)
     {
         _actualHP -= damage;
@@ -187,16 +236,6 @@ public class Enemy : MonoBehaviour
     {
         weapon.Attack(_actualDamage);
         isAttacking = false;
-    }
-
-    public float ActualSpeed
-    {
-        get { return _actualSpeed; }
-    }
-
-    public bool IsDead
-    {
-        get { return _isDead; }
     }
 
     #endregion

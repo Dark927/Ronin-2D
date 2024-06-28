@@ -16,11 +16,20 @@ public class RoninBlade : MonoBehaviour
 
     #region Parameters 
 
+    [Space]
+    [Header("Stats Settings")]
+    [Space]
+
     [SerializeField] float fastAttackDmg = 1f;
     [SerializeField] float heavyAttackDmg = 3f;
 
+    [Space]
+    [Header("Configuration")]
+    [Space]
+
     [SerializeField] Collider2D fastAttackCollider;
     [SerializeField] Collider2D heavyAttackCollider;
+
     Collider2D currentAttackCol;
 
     bool _isAttack = false;
@@ -44,7 +53,7 @@ public class RoninBlade : MonoBehaviour
 
     private void SetAttackState()
     {
-        statesController.AttackState(AttackType);
+        statesController.AttackState(_attackType);
     }
 
     #endregion
@@ -61,12 +70,6 @@ public class RoninBlade : MonoBehaviour
     // -------------------------
 
     #region Getters and Setters
-
-    public RoninAttackType AttackType
-    {
-        get { return _attackType; }
-        set { _attackType = value; }
-    }
 
     public bool IsAttack
     {
@@ -86,7 +89,7 @@ public class RoninBlade : MonoBehaviour
         if (type == RoninAttackType.Attack_fast)
         {
             IsAttack = true;
-            AttackType = type;
+            _attackType = type;
 
             currentAttackCol = fastAttackCollider;
             SetAttackState();
@@ -95,7 +98,7 @@ public class RoninBlade : MonoBehaviour
         else if (type == RoninAttackType.Attack_heavy)
         {
             IsAttack = true;
-            AttackType = type;
+            _attackType = type;
 
             currentAttackCol = heavyAttackCollider;
             SetAttackState();
@@ -104,7 +107,7 @@ public class RoninBlade : MonoBehaviour
 
     public float GetAttackDmg()
     {
-        return AttackType switch
+        return _attackType switch
         {
             RoninAttackType.Attack_fast => fastAttackDmg,
             RoninAttackType.Attack_heavy => heavyAttackDmg,

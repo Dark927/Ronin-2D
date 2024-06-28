@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class LoadManager : MonoBehaviour
+public class SpawnPoint : MonoBehaviour
 {
     // --------------------------------------------------------------------------
     // Public Methods
@@ -11,10 +10,10 @@ public class LoadManager : MonoBehaviour
 
     #region Public Methods
 
-    public void ReloadCurrentScene()
+    public void SpawnEnemy(GameObject enemy)
     {
-        Scene currentScene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(currentScene.name);
+        enemy.transform.position = transform.position;
+        enemy.SetActive(true);
     }
 
     #endregion

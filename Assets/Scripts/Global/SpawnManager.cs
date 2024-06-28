@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyStatesController : MonoBehaviour
+public class SpawnManager : MonoBehaviour
 {
     // --------------------------------------------------------------------------
     // Parameters
@@ -10,9 +10,9 @@ public class EnemyStatesController : MonoBehaviour
 
     #region Parameters 
 
-    Enemy enemy;
-    Animator animator;
-    bool isDeadAnimation = false;
+    [SerializeField] List<SpawnPoint> spawners;
+    [SerializeField] float spawnRate = 1f;
+    EnemyPool enemyPool;
 
     #endregion
 
@@ -25,35 +25,26 @@ public class EnemyStatesController : MonoBehaviour
 
     private void Awake()
     {
-        enemy = GetComponent<Enemy>();
-        animator = GetComponent<Animator>();
+        enemyPool = GetComponent<EnemyPool>();
     }
 
-    private void Update()
+    private void Start()
     {
-        CheckDeadState();
+        StartEnemySpawning(spawnRate);
+    }
 
-        if (!isDeadAnimation)
+    private IEnumerator EnemySpawnRoutine(float spawnRate)
+    {
+        while (true)
         {
-            animator.SetFloat("Speed", enemy.ActualSpeed);
-        }
-    }
+            GameObject enemy = enemyPool.RequestEnemyObject(EnemyType.Enemy_goblin);
 
-    public void SetAttackState()
-    {
-        animator.SetTrigger("Attack");
-    }
-
-    private void CheckDeadState()
-    {
-        if (isDeadAnimation)
-        {
-            AnimatorStateInfo animInfo = animator.GetCurrentAnimatorStateInfo(0);
-
-            if (animInfo.IsName("Death") && animInfo.normalizedTime >= 1.0f)
+            if (enemy != null)
             {
-                animator.speed = 0;
+                int randomSpawnerIndex = Random.Range(0, spawners.Count);
+                spawners[randomSpawnerIndex].SpawnEnemy(enemy);
             }
+            yield return new WaitForSeconds(spawnRate);
         }
     }
 
@@ -66,11 +57,14 @@ public class EnemyStatesController : MonoBehaviour
 
     #region Public Methods
 
-    public void SetDeadState()
+    public void StartEnemySpawning(float spawnRate = 1f)
     {
-        animator.SetFloat("Speed", 0);
-        animator.SetBool("Dead", true);
-        isDeadAnimation = true;
+        StartCoroutine(EnemySpawnRoutine(spawnRate));
+    }
+    
+    public void EndEnemySpawning()
+    {
+        StopAllCoroutines();
     }
 
     #endregion

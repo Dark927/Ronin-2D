@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,16 +11,19 @@ public class GameManager : MonoBehaviour
 
     #region Parameters
 
+    [Space]
+    [Header("Configuration")]
+    [Space]
+
+    [SerializeField] List<GameObject> gameplayElementsUI;
+
     public static GameManager instance;
 
     // Pause parameters 
 
     bool enablePauseGame = true;
     bool blockedInput = false;
-
-    // Load parameters
-
-    LoadManager loadManager;
+    bool gameOver = false;
 
     #endregion
 
@@ -42,13 +46,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        loadManager = FindObjectOfType<LoadManager>();
-    }
-
     private void Update()
     {
+        if(gameOver)
+        {
+            return;
+        }
+
         PauseSwitch();
         blockedInput = PauseManager.instance.IsPause();
     }
@@ -77,8 +81,24 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
-        loadManager.ReloadCurrentScene();
+        LoadManager.instance.ReloadCurrentScene();
         PauseManager.instance.UnPauseGame(true);
+    }
+
+    public bool IsPointingUI()
+    {
+        return EventSystem.current.IsPointerOverGameObject();
+    }
+
+    public void SetGameOver()
+    {
+        gameOver = true;
+        blockedInput = true;
+
+        foreach(GameObject element in gameplayElementsUI)
+        {
+            element.SetActive(false);
+        }
     }
 
     #endregion

@@ -14,6 +14,8 @@ public class EnemyWeapon : MonoBehaviour
     bool isReloaded = true;
     float reloadTime = 1.5f;
 
+    PlayerController player;
+
     #endregion
 
 
@@ -23,9 +25,15 @@ public class EnemyWeapon : MonoBehaviour
 
     #region Private Methods
 
+    private void Start()
+    {
+        player = FindObjectOfType<PlayerController>();
+    }
+
+
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if(IsPlayerCollision(collision))
+        if (IsPlayerCollision(collision))
         {
             playerInAttackRange = true;
         }
@@ -74,19 +82,17 @@ public class EnemyWeapon : MonoBehaviour
         return playerInAttackRange;
     }
 
+    public void ChargeAttack()
+    {
+        isReloaded = false;
+        StartCoroutine(ReloadDelay(reloadTime));
+    }
+
     public void Attack(float damage)
     {
-        if(ReadyToAttack())
+        if (IsInAttackRange())
         {
-            isReloaded = false;
-
-            PlayerController player = FindObjectOfType<PlayerController>();
-
-            if(player != null)
-            {
-                player.TakeDamage(damage);
-                StartCoroutine(ReloadDelay(reloadTime));
-            }
+            player.TakeDamage(damage);
         }
     }
 

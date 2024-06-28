@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,13 +11,16 @@ public class PlayerController : MonoBehaviour
 
     #region Parameters 
 
-    [Space]
     [Header("Stats Settings")]
     [Space]
 
-    [SerializeField] float basicHP = 25f;
-    [SerializeField] float basicSpeed = 4f;
-    [SerializeField] float basicJumpForce = 10f;
+    [SerializeField] RoninData stats;
+
+    [Space]
+    [Header("Configuration")]
+    [Space]
+
+    [SerializeField] UnityEvent deathEvent;
 
     float actualSpeed = 0;
     float actualHP;
@@ -30,6 +33,8 @@ public class PlayerController : MonoBehaviour
     DamageFlash damageFlash;
 
     Vector2 movementBounds = new(-22, 10);
+
+    Coroutine activeDeadRoutine = null;
 
 
     #endregion
@@ -50,7 +55,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        actualHP = basicHP;
+        actualHP = stats.basicHP;
     }
 
     // Update is called once per frame
@@ -62,21 +67,18 @@ public class PlayerController : MonoBehaviour
         }
 
         BladeAttack();
-
-        if (!roninBlade.IsAttack)
-        {
-            Movement();
-        }
+        Movement();
     }
 
     private void BladeAttack()
     {
         // Check if pointer not over UI element
 
-        if (EventSystem.current.IsPointerOverGameObject())
+        if (GameManager.instance.IsPointingUI())
         {
             return;
         }
+
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
@@ -91,8 +93,11 @@ public class PlayerController : MonoBehaviour
 
     private void Movement()
     {
-        Run();
-        Jump();
+        if (!IsMovementBlocked())
+        {
+            Run();
+            Jump();
+        }
     }
 
     private void Run()
@@ -106,7 +111,7 @@ public class PlayerController : MonoBehaviour
 
         // Set new speed and move player
 
-        actualSpeed = horizontalInput * basicSpeed;
+        actualSpeed = horizontalInput * stats.basicSpeed;
         transform.Translate(Vector2.right * actualSpeed * Time.deltaTime);
     }
 
@@ -141,9 +146,14 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && !isJumped)
         {
-            rb.AddForce(Vector2.up * basicJumpForce, ForceMode2D.Impulse);
+            rb.AddForce(Vector2.up * stats.basicJumpForce, ForceMode2D.Impulse);
             IsJumped = true;
         }
+    }
+
+    private bool IsMovementBlocked()
+    {
+        return roninBlade.IsAttack;
     }
 
     private void OnTriggerStay2D(Collider2D col)
@@ -157,6 +167,14 @@ public class PlayerController : MonoBehaviour
     private bool IsGroundCollider2D(Collider2D col)
     {
         return col.GetComponent<EdgeCollider2D>() != null;
+    }
+
+    IEnumerator BecomeDeadRoutine()
+    {
+        yield return new WaitWhile(() => isJumped);
+        
+        deadState = true;
+        rb.simulated = false;
     }
 
     #endregion
@@ -174,11 +192,6 @@ public class PlayerController : MonoBehaviour
         set { isJumped = value; }
     }
 
-    public float GetActualSpeed()
-    {
-        return Mathf.Abs(actualSpeed);
-    }
-
     public bool IsFalling()
     {
         if (isJumped)
@@ -189,36 +202,45 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
+    public bool IsDead()
+    {
+        return deadState;
+    }
+
+    public float GetActualSpeed()
+    {
+        return Mathf.Abs(actualSpeed);
+    }
+
+
     public void TakeDamage(float damage)
     {
-        if (deadState)
-        {
-            return;
-        }
-
         // Apply damage if player not dead yet 
 
         actualHP -= damage;
         damageFlash.Flash();
 
-        if (IsDead())
+        if (actualHP <= 0)
         {
-            deadState = true;
-            actualSpeed = 0;
-            rb.simulated = false;
-
-            return;
+            deathEvent.Invoke();
         }
     }
 
-    public bool IsDead()
+    public void SetDeadState()
     {
-        return actualHP <= 0;
+        if (activeDeadRoutine != null)
+        {
+            return;
+        }
+
+        actualSpeed = 0;
+        activeDeadRoutine = StartCoroutine(BecomeDeadRoutine());
     }
+
 
     public float GetHpRatio()
     {
-        return actualHP / basicHP;
+        return actualHP / stats.basicHP;
     }
 
     #endregion

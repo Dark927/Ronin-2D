@@ -166,6 +166,7 @@ GameObject:
   - component: {fileID: 3258311059843540707}
   - component: {fileID: 8784611061900186830}
   - component: {fileID: 1133611279596951816}
+  - component: {fileID: 6022463726677324071}
   - component: {fileID: 1748589941}
   m_Layer: 6
   m_Name: Goblin
@@ -297,7 +298,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.017593466, y: -0.07333794}
+  m_Offset: {x: 0.027579747, y: -0.07333794}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -308,7 +309,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.17319696, y: 0.3335778}
+  m_Size: {x: 0.14323811, y: 0.3335778}
   m_EdgeRadius: 0
 --- !u!114 &8784611061900186830
 MonoBehaviour:
@@ -322,10 +323,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8cdaeaf3cb6afd4fa6812863a9558c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basicHP: 5
-  basicSpeed: 2.5
-  basicDamage: 2
-  attackReloadTime: 1.5
+  stats: {fileID: 11400000, guid: 66959877d7685bd44921613f0e5ee41a, type: 2}
   sideSwapDelay: 0.15
   weapon: {fileID: 1660775161}
 --- !u!114 &1133611279596951816
@@ -338,6 +336,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 40555ccc9d661d24d8d2580670d57b3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6022463726677324071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427903420315619578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da02fe423254f0b42b107f66d23e7a15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1748589941

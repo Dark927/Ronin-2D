@@ -189,9 +189,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f78ed872690b2ad4ea62962771b88339, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basicHP: 20
-  basicSpeed: 4
-  basicJumpForce: 5.5
+  stats: {fileID: 11400000, guid: a96d9b79c6a50534f866be8dcc34918b, type: 2}
+  deathEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 29f4e9a18ca552049ae69ff94d45a4c8, type: 2}
+        m_TargetAssemblyTypeName: GameEvent, Assembly-CSharp
+        m_MethodName: Raise
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &961681380
 MonoBehaviour:
   m_ObjectHideFlags: 0
