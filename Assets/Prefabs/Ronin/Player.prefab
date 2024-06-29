@@ -350,6 +350,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fastAttackDmg: 1
   heavyAttackDmg: 3
+  fastAttackPushForce: 1
+  heavyAttackPushForce: 2
+  fastAttackStunTime: 0.25
+  heavyAttackStunTime: 0.5
   fastAttackCollider: {fileID: 1118829834}
   heavyAttackCollider: {fileID: 2138938169}
 --- !u!4 &1890543696 stripped

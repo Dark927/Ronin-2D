@@ -14,7 +14,6 @@ public class EnemyCollisionsController : MonoBehaviour
 
     Enemy currentEnemy;
     Collider2D currentCollider;
-    Rigidbody2D rb;
 
     bool ignoringCollisions = false;
     float minSpeedToIgnore = 1f;
@@ -31,7 +30,6 @@ public class EnemyCollisionsController : MonoBehaviour
     private void Awake()
     {
         currentEnemy = GetComponent<Enemy>();
-        rb = currentEnemy.GetComponent<Rigidbody2D>();
         currentCollider = GetComponent<Collider2D>();
     }
 
@@ -61,9 +59,6 @@ public class EnemyCollisionsController : MonoBehaviour
 
     private void IgnoreCollisions(bool ignoreCols)
     {
-        rb.isKinematic = ignoreCols;
-        FreezePositionY(ignoreCols);
-
         foreach (Collider2D enemyCol in enemyCollidersList)
         {
             if (enemyCol != currentCollider)
@@ -75,7 +70,7 @@ public class EnemyCollisionsController : MonoBehaviour
 
     private void SetEnemyCollisions(Collider2D enemyCol, bool ignoreCols)
     {
-        if(ignoreCols)
+        if (ignoreCols)
         {
             Physics2D.IgnoreCollision(currentCollider, enemyCol, true);
             return;
@@ -85,22 +80,10 @@ public class EnemyCollisionsController : MonoBehaviour
             Enemy otherEnemy = enemyCol.GetComponent<Enemy>();
             bool isCollisionsAllowed = (otherEnemy.ActualSpeed > minSpeedToIgnore);
 
-            if(isCollisionsAllowed)
+            if (isCollisionsAllowed)
             {
                 Physics2D.IgnoreCollision(currentCollider, enemyCol, false);
             }
-        }
-    }
-
-    private void FreezePositionY(bool freeze)
-    {
-        if (freeze)
-        {
-            rb.constraints |= RigidbodyConstraints2D.FreezePositionY;
-        }
-        else
-        {
-            rb.constraints &= ~RigidbodyConstraints2D.FreezePositionY;
         }
     }
 

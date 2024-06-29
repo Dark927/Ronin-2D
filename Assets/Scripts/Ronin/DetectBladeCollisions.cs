@@ -4,16 +4,40 @@ using UnityEngine;
 
 public class DetectBladeCollisions : MonoBehaviour
 {
+    // --------------------------------------------------------------------------
+    // Parameters
+    // --------------------------------------------------------------------------
+
+    #region Parameters 
+
+    float dmg;
+    float stun;
+    float force;
+
+    #endregion
+
+
+    // --------------------------------------------------------------------------
+    // Private Methods
+    // --------------------------------------------------------------------------
+
+    #region Private Methods
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Enemy enemy = collision.gameObject.GetComponent<Enemy>();
+        EnemyHealth enemyHealth = collision.gameObject.GetComponent<EnemyHealth>();
 
-        if (enemy != null)
+        if (enemyHealth != null)
         {
             RoninBlade blade = GetComponentInParent<RoninBlade>();
-            float dmg = blade.GetAttackDmg();
 
-            enemy.TakeDamage(dmg);
+            dmg = blade.GetAttackDmg();
+            stun = blade.GetStunTime();
+            force = blade.GetPushForce();
+
+            enemyHealth.TakeDamage(dmg, force, stun);
         }
     }
+
+    #endregion
 }

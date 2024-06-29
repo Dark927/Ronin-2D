@@ -23,9 +23,8 @@ public class Enemy : MonoBehaviour
     [Header("Stats Settings")]
     [Space]
 
-    [SerializeField] EnemyData stats;
+    [SerializeField] EnemyData _stats;
 
-    float _actualHP;
     float _actualSpeed;
     float _actualDamage;
     bool _isDead = false;
@@ -36,11 +35,12 @@ public class Enemy : MonoBehaviour
     [Space]
 
     [SerializeField] float sideSwapDelay = 0.5f;
-    int lookDirectionX = 1;
+    int _lookDirectionX = 1;
     bool isLookRight = true;
-    bool activeSwapSide = false;
     bool isAttacking = false;
+    bool isStunned = false;
 
+    Coroutine activeSideSwap = null;
 
     [Space]
     [Header("Configuration Settings")]
@@ -51,7 +51,6 @@ public class Enemy : MonoBehaviour
     EnemyCollisionsController collisionsController;
 
     Rigidbody2D rb;
-    DamageFlash damageFlash;
     GameObject targetPlayer;
 
     #endregion
@@ -68,7 +67,6 @@ public class Enemy : MonoBehaviour
         statesController = GetComponent<EnemyStatesController>();
         collisionsController = GetComponent<EnemyCollisionsController>();
         rb = GetComponent<Rigidbody2D>();
-        damageFlash = GetComponent<DamageFlash>();
     }
 
     private void Start()
@@ -87,11 +85,16 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-        if (!IsDead)
+        // Configure checking input conditions
+
+        if (GameManager.instance.IsBlockedInput() || _isDead || isStunned)
         {
-            Movement();
-            Attack();
+            StopMovement();
+            return;
         }
+
+        Movement();
+        Attack();
     }
 
     private void Arise()
@@ -105,11 +108,10 @@ public class Enemy : MonoBehaviour
 
     private void ConfigureStats()
     {
-        _actualHP = stats.basicHP;
-        _actualSpeed = stats.basicSpeed;
-        _actualDamage = stats.basicDamage;
+        _actualSpeed = _stats.basicSpeed;
+        _actualDamage = _stats.basicDamage;
 
-        weapon.SetReloadTime(stats.attackReloadTime);
+        weapon.SetReloadTime(_stats.attackReloadTime);
     }
 
     private void Attack()
@@ -136,25 +138,17 @@ public class Enemy : MonoBehaviour
 
     private void ConfigureSpeed()
     {
-        // Configure checking input conditions
-
-        if (GameManager.instance.IsBlockedInput())
-        {
-            StopMovement();
-            return;
-        }
-
         // Configure checking player and weapon conditions
 
-        if (!activeSwapSide)
+        if (activeSideSwap == null)
         {
-            if(weapon.IsInAttackRange() || IsNearPlayer() || isAttacking)
+            if (weapon.IsInAttackRange() || IsNearPlayer() || isAttacking)
             {
                 StopMovement();
             }
             else
             {
-                _actualSpeed = stats.basicSpeed;
+                _actualSpeed = _stats.basicSpeed;
             }
         }
     }
@@ -166,22 +160,10 @@ public class Enemy : MonoBehaviour
 
     private void CalculatePosition()
     {
-        lookDirectionX = (targetPlayer.transform.position.x - transform.position.x) > 0 ? 1 : -1;
-        Vector2 movement = Vector2.right * lookDirectionX * _actualSpeed * Time.deltaTime;
+        _lookDirectionX = (targetPlayer.transform.position.x - transform.position.x) > 0 ? 1 : -1;
+        Vector2 movement = Vector2.right * _lookDirectionX * _actualSpeed * Time.deltaTime;
 
         transform.Translate(movement);
-    }
-
-
-    private void ConfigureLookDirection()
-    {
-        bool swapToRight = ((lookDirectionX < 0) && isLookRight);
-        bool swapToLeft = ((lookDirectionX > 0) && !isLookRight);
-
-        if ((swapToRight || swapToLeft) && !activeSwapSide)
-        {
-            StartCoroutine(StopMovementDelay(sideSwapDelay, true));
-        }
     }
 
     private bool IsNearPlayer()
@@ -189,36 +171,40 @@ public class Enemy : MonoBehaviour
         return Mathf.Abs(targetPlayer.transform.position.x - transform.position.x) < 0.05;
     }
 
-    IEnumerator StopMovementDelay(float stopTime, bool isSideSwap = false)
+    private void ConfigureLookDirection()
     {
-        StopMovement();
-        activeSwapSide = true;
+        bool swapToRight = ((_lookDirectionX < 0) && isLookRight);
+        bool swapToLeft = ((_lookDirectionX > 0) && !isLookRight);
 
-        yield return new WaitForSeconds(stopTime);
+        bool isSwapping = !((swapToRight || swapToLeft) && (activeSideSwap == null));
 
-        _actualSpeed = stats.basicSpeed;
-
-        if (isSideSwap)
+        if (!isSwapping)
         {
+            activeSideSwap = StartCoroutine(BecomeStunnedRoutine(sideSwapDelay, true));
             SwapLookDirection();
         }
+    }
 
-        activeSwapSide = false;
+    IEnumerator BecomeStunnedRoutine(float time, bool swappingSide = false)
+    {
+        StopMovement();
+        isStunned = true;
+
+        yield return new WaitForSeconds(time);
+
+        isStunned = false;
+        _actualSpeed = _stats.basicSpeed;
+
+        if (swappingSide)
+        {
+            activeSideSwap = null;
+        }
     }
 
     private void SwapLookDirection()
     {
         transform.localScale = new Vector2(transform.localScale.x * -1, transform.localScale.y);
         isLookRight = !isLookRight;
-    }
-
-    private void Die()
-    {
-        damageFlash.Flash(true);
-
-        _isDead = true;
-        statesController.SetDeadState();
-        rb.simulated = false;
     }
 
     #endregion
@@ -248,7 +234,7 @@ public class Enemy : MonoBehaviour
 
     public EnemyType Type
     {
-        get { return stats.type; }
+        get { return _stats.type; }
     }
 
     public bool IsAttack
@@ -256,21 +242,31 @@ public class Enemy : MonoBehaviour
         get { return isAttacking; }
     }
 
+    public EnemyData Stats
+    {
+        get { return _stats; }
+    }
+
+    public int LookDirectionX
+    {
+        get { return _lookDirectionX; }
+    }
+
     #endregion
 
-    public void TakeDamage(float damage, float pushForce = 1f, float stopTime = 0.5f)
+    public void BecomeStunned(float time)
     {
-        _actualHP -= damage;
-        damageFlash.Flash();
+        StopAllCoroutines();
+        StartCoroutine(BecomeStunnedRoutine(time));
+    }
 
-        StartCoroutine(StopMovementDelay(stopTime));
+    public void Die()
+    {
+        _isDead = true;
+        statesController.SetDeadState();
+        rb.simulated = false;
 
-        if (_actualHP <= 0)
-        {
-            Die();
-        }
-
-        rb.AddForce(Vector2.right * lookDirectionX * pushForce, ForceMode2D.Impulse);
+        GameManager.instance.AddKill();
     }
 
     public void HitPlayer()

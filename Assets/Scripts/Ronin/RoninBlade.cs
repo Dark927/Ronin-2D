@@ -17,11 +17,28 @@ public class RoninBlade : MonoBehaviour
     #region Parameters 
 
     [Space]
-    [Header("Stats Settings")]
+    [Header("Damage Settings")]
     [Space]
 
     [SerializeField] float fastAttackDmg = 1f;
     [SerializeField] float heavyAttackDmg = 3f;
+
+
+    [Space]
+    [Header("Force Settings")]
+    [Space]
+
+    [SerializeField] float fastAttackPushForce = 1f;
+    [SerializeField] float heavyAttackPushForce = 2.5f;
+
+
+    [Space]
+    [Header("Stun Settings")]
+    [Space]
+
+    [SerializeField] float fastAttackStunTime = 0.25f;
+    [SerializeField] float heavyAttackStunTime = 0.75f;
+
 
     [Space]
     [Header("Configuration")]
@@ -111,6 +128,26 @@ public class RoninBlade : MonoBehaviour
         {
             RoninAttackType.Attack_fast => fastAttackDmg,
             RoninAttackType.Attack_heavy => heavyAttackDmg,
+            _ => 0,
+        };
+    }
+
+    public float GetStunTime()
+    {
+        return _attackType switch
+        {
+            RoninAttackType.Attack_fast => fastAttackStunTime,
+            RoninAttackType.Attack_heavy => heavyAttackStunTime,
+            _ => 0,
+        };
+    }
+
+    public float GetPushForce()
+    {
+        return _attackType switch
+        {
+            RoninAttackType.Attack_fast => fastAttackPushForce,
+            RoninAttackType.Attack_heavy => heavyAttackPushForce,
             _ => 0,
         };
     }

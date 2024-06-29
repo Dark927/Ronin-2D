@@ -17,21 +17,24 @@ public class GameManager : MonoBehaviour
     [SerializeField] List<GameObject> gameplayElementsUI;
 
     public static GameManager instance;
+    public CustomTime gameTime = new();
 
     // ---
     // Pause parameters 
     // ---
 
     bool enablePauseGame = true;
-    bool blockedInput = false;
+    bool _blockedInput = false;
 
     // ---
     // Game parameters
     // ---
 
-    public CustomTime gameTime = new();
     float timeCounter = 0;
-    bool gameOver = false;
+    bool _gameOver = false;
+
+    int _kills = 0;
+
 
     #endregion
 
@@ -56,7 +59,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if(gameOver)
+        if(_gameOver)
         {
             return;
         }
@@ -65,7 +68,7 @@ public class GameManager : MonoBehaviour
         gameTime.UpdateTime(Mathf.RoundToInt(timeCounter));
 
         PauseSwitch();
-        blockedInput = PauseManager.instance.IsPause();
+        _blockedInput = PauseManager.instance.IsPause();
     }
 
     private void PauseSwitch()
@@ -85,9 +88,14 @@ public class GameManager : MonoBehaviour
 
     #region Public Methods
 
+    public int Kills
+    {
+        get { return _kills; }
+    }
+
     public bool IsBlockedInput()
     {
-        return blockedInput;
+        return _blockedInput;
     }
 
     public void RestartGame()
@@ -103,13 +111,19 @@ public class GameManager : MonoBehaviour
 
     public void SetGameOver()
     {
-        gameOver = true;
-        blockedInput = true;
+        _gameOver = true;
+        _blockedInput = true;
 
         foreach(GameObject element in gameplayElementsUI)
         {
             element.SetActive(false);
         }
+    }
+
+    public void AddKill()
+    {
+        _kills++;
+        KillsCounterUI.instance.UpdateKills(_kills);
     }
 
     #endregion
