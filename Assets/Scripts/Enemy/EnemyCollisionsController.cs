@@ -10,11 +10,14 @@ public class EnemyCollisionsController : MonoBehaviour
 
     #region Parameters
 
+    List<Collider2D> enemyCollidersList = new();
+
     Enemy currentEnemy;
     Collider2D currentCollider;
+    Rigidbody2D rb;
 
-    List<Collider2D> enemyCollidersList = new();
-    bool isIgnoring = false;
+    bool ignoringCollisions = false;
+    float minSpeedToIgnore = 1f;
 
     #endregion
 
@@ -28,46 +31,77 @@ public class EnemyCollisionsController : MonoBehaviour
     private void Awake()
     {
         currentEnemy = GetComponent<Enemy>();
+        rb = currentEnemy.GetComponent<Rigidbody2D>();
         currentCollider = GetComponent<Collider2D>();
-    }
-
-    private void Start()
-    {
-        Enemy[] enemyAll = FindObjectsOfType<Enemy>(true);
-
-        foreach (Enemy enemy in enemyAll)
-        {
-            enemyCollidersList.Add(enemy.GetComponent<Collider2D>());
-        }
     }
 
     private void Update()
     {
-        UpdateCollisionStatus();
+        if (enemyCollidersList.Count == 0)
+        {
+            enemyCollidersList = EnemyPool.instance.GetAllColliders();
+        }
+
+        ConfigureCollisions();
     }
 
-    private void UpdateCollisionStatus()
+    private void ConfigureCollisions()
     {
-        if (currentEnemy.IsAttack && !isIgnoring)
+        if ((currentEnemy.ActualSpeed < minSpeedToIgnore) && !ignoringCollisions)
         {
-            SetCollisionStatus(true);
+            ignoringCollisions = true;
+            IgnoreCollisions(ignoringCollisions);
         }
-        else if (!currentEnemy.IsAttack && isIgnoring)
+        else if ((currentEnemy.ActualSpeed > minSpeedToIgnore) && ignoringCollisions)
         {
-            SetCollisionStatus(false);
+            ignoringCollisions = false;
+            IgnoreCollisions(ignoringCollisions);
         }
     }
 
-    private void SetCollisionStatus(bool ignore)
+    private void IgnoreCollisions(bool ignoreCols)
     {
+        rb.isKinematic = ignoreCols;
+        FreezePositionY(ignoreCols);
+
         foreach (Collider2D enemyCol in enemyCollidersList)
         {
-            if (currentCollider != enemyCol)
+            if (enemyCol != currentCollider)
             {
-                Physics2D.IgnoreCollision(currentCollider, enemyCol, ignore);
+                SetEnemyCollisions(enemyCol, ignoreCols);
             }
         }
-        isIgnoring = ignore;
+    }
+
+    private void SetEnemyCollisions(Collider2D enemyCol, bool ignoreCols)
+    {
+        if(ignoreCols)
+        {
+            Physics2D.IgnoreCollision(currentCollider, enemyCol, true);
+            return;
+        }
+        else
+        {
+            Enemy otherEnemy = enemyCol.GetComponent<Enemy>();
+            bool isCollisionsAllowed = (otherEnemy.ActualSpeed > minSpeedToIgnore);
+
+            if(isCollisionsAllowed)
+            {
+                Physics2D.IgnoreCollision(currentCollider, enemyCol, false);
+            }
+        }
+    }
+
+    private void FreezePositionY(bool freeze)
+    {
+        if (freeze)
+        {
+            rb.constraints |= RigidbodyConstraints2D.FreezePositionY;
+        }
+        else
+        {
+            rb.constraints &= ~RigidbodyConstraints2D.FreezePositionY;
+        }
     }
 
     #endregion

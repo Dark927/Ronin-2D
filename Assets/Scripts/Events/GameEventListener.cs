@@ -11,7 +11,7 @@ public class GameEventListener : MonoBehaviour
 
     #region Parameters
 
-    [SerializeField] GameEvent eventData;
+    [SerializeField] GameEventData eventData;
     [SerializeField] UnityEvent response;
 
     #endregion
@@ -22,7 +22,6 @@ public class GameEventListener : MonoBehaviour
     // --------------------------------------------------------------------------
 
     #region Private Methods
-
 
     private void OnEnable()
     {

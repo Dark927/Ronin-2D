@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Entities/EnemySpawnData")]
+[CreateAssetMenu(menuName = "Entities/EnemySpawn Data")]
 public class EnemySpawnData : ScriptableObject
 {
     [Space]

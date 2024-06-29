@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e807cd30fd3c4e24ca69c6ef66702bfd, type: 3}
+  m_Name: GoblinFastSpawnData
+  m_EditorClassIdentifier: 
+  enemyContainer: {fileID: 3920885226192924126, guid: 6fdf3d7e65531c148aa286c38c29ece0, type: 3}
+  enemyPrefab: {fileID: 1427903420315619578, guid: 4122ad87daab44744b1258ec36d0340d, type: 3}
+  maxCount: 10

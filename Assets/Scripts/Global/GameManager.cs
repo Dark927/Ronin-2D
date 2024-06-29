@@ -11,7 +11,6 @@ public class GameManager : MonoBehaviour
 
     #region Parameters
 
-    [Space]
     [Header("Configuration")]
     [Space]
 
@@ -19,10 +18,19 @@ public class GameManager : MonoBehaviour
 
     public static GameManager instance;
 
+    // ---
     // Pause parameters 
+    // ---
 
     bool enablePauseGame = true;
     bool blockedInput = false;
+
+    // ---
+    // Game parameters
+    // ---
+
+    public CustomTime gameTime = new();
+    float timeCounter = 0;
     bool gameOver = false;
 
     #endregion
@@ -52,6 +60,9 @@ public class GameManager : MonoBehaviour
         {
             return;
         }
+
+        timeCounter += Time.deltaTime;
+        gameTime.UpdateTime(Mathf.RoundToInt(timeCounter));
 
         PauseSwitch();
         blockedInput = PauseManager.instance.IsPause();

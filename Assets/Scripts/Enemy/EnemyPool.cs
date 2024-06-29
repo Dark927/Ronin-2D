@@ -10,8 +10,10 @@ public class EnemyPool : MonoBehaviour
 
     #region Parameters 
 
+    public static EnemyPool instance;
+
     [SerializeField] List<EnemySpawnData> spawnDataList;
-    List<Enemy>[] pool;
+    List<List<Enemy>> pool;
 
     #endregion
 
@@ -24,6 +26,15 @@ public class EnemyPool : MonoBehaviour
 
     private void Start()
     {
+        if(instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(instance);
+        }
+
         InitPool();
     }
 
@@ -31,22 +42,23 @@ public class EnemyPool : MonoBehaviour
     {
         // Initialize pool and add all enemies using spawn data
 
-        pool = new List<Enemy>[spawnDataList.Count];
+        pool = new List<List<Enemy>>();
 
-        for (int enemyTypeIndex = 0; enemyTypeIndex < pool.Length; ++enemyTypeIndex)
+        foreach(EnemySpawnData data in spawnDataList)
         {
-            pool[enemyTypeIndex] = new List<Enemy>();
-            FillPoolList(enemyTypeIndex);
+            PushSpawnData(data);
         }
     }
 
-    private void FillPoolList(int enemyTypeIndex)
+    private void PushSpawnData(EnemySpawnData spawnData)
     {
-        int maxEnemyCount = spawnDataList[enemyTypeIndex].maxCount;
+        pool.Add(new());
+
+        int maxEnemyCount = spawnData.maxCount;
 
         // Add enemies of current type to pool using spawn data
 
-        GameObject containerPrefab = spawnDataList[enemyTypeIndex].enemyContainer;
+        GameObject containerPrefab = spawnData.enemyContainer;
         GameObject spawnContainer = Instantiate(containerPrefab, transform.position, Quaternion.identity, transform);
 
         spawnContainer.name = containerPrefab.name;
@@ -54,13 +66,14 @@ public class EnemyPool : MonoBehaviour
 
         for (int enemyIndex = 0; enemyIndex < maxEnemyCount; ++enemyIndex)
         {
-            GameObject enemyPrefab = spawnDataList[enemyTypeIndex].enemyPrefab;
+            GameObject enemyPrefab = spawnData.enemyPrefab;
             GameObject enemyToAdd = Instantiate(enemyPrefab, transform.position, Quaternion.identity, spawnContainer.transform);
 
             enemyToAdd.name = enemyPrefab.name;
             enemyToAdd.SetActive(false);
 
-            pool[enemyTypeIndex].Add(enemyToAdd.GetComponent<Enemy>());
+            int lastIndex = pool.Count - 1;
+            pool[lastIndex].Add(enemyToAdd.GetComponent<Enemy>());
         }
     }
 
@@ -90,7 +103,7 @@ public class EnemyPool : MonoBehaviour
 
     public GameObject RequestEnemyObject(EnemyType type)
     {
-        for (int enemyTypeIndex = 0; enemyTypeIndex < pool.Length; ++enemyTypeIndex)
+        for (int enemyTypeIndex = 0; enemyTypeIndex < pool.Count; ++enemyTypeIndex)
         {
             if (pool[enemyTypeIndex][0].Type != type)
             {
@@ -102,5 +115,25 @@ public class EnemyPool : MonoBehaviour
         return null;
     }
 
+    public void AddNewEnemy(EnemySpawnData data)
+    {
+        PushSpawnData(data);
+    }
+
+    public List<Collider2D> GetAllColliders()
+    {
+        List<Collider2D> allColliders = new();
+
+        for (int enemyTypeIndex = 0; enemyTypeIndex < pool.Count; ++enemyTypeIndex)
+        {
+            for (int enemyIndex = 0; enemyIndex < pool[enemyTypeIndex].Count; ++enemyIndex)
+            {
+                Collider2D enemyCollider = pool[enemyTypeIndex][enemyIndex].GetComponent<Collider2D>();
+                allColliders.Add(enemyCollider);
+            }
+        }
+
+        return allColliders;
+    }
     #endregion
 }

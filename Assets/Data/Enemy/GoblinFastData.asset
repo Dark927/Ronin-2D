@@ -9,9 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 144d4c24d43818a4e95f0aafaf4efefe, type: 3}
-  m_Name: RoninData
+  m_Script: {fileID: 11500000, guid: edf28cacd6d08a243916b11f0a91289b, type: 3}
+  m_Name: GoblinFastData
   m_EditorClassIdentifier: 
-  basicHP: 25
-  basicSpeed: 4
-  basicJumpForce: 5.5
+  type: 0
+  basicHP: 3
+  basicSpeed: 4.5
+  basicDamage: 3
+  attackReloadTime: 1

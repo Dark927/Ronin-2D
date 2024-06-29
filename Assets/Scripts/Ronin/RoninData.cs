@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Entities/RoninData")]
+[CreateAssetMenu(menuName = "Entities/Ronin Data")]
 public class RoninData : ScriptableObject
 {
     [Space]

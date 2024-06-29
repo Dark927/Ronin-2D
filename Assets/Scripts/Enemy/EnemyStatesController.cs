@@ -52,6 +52,17 @@ public class EnemyStatesController : MonoBehaviour
         }
     }
 
+    IEnumerator ResetStateRoutine()
+    {
+        animator.enabled = false;
+        animator.speed = 1;
+
+        yield return null;
+
+        animator.enabled = true;
+        isDeadAnimation = false;
+    }
+
     #endregion
 
 
@@ -66,6 +77,11 @@ public class EnemyStatesController : MonoBehaviour
         animator.SetFloat("Speed", 0);
         animator.SetBool("Dead", true);
         isDeadAnimation = true;
+    }
+
+    public void ResetState()
+    {
+        StartCoroutine(ResetStateRoutine());
     }
 
     public void SetAttackState()

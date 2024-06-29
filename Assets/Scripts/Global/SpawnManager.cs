@@ -10,9 +10,14 @@ public class SpawnManager : MonoBehaviour
 
     #region Parameters 
 
+    [Space]
+    [Header("Spawn Settings")]
+    [Space]
+
     [SerializeField] List<SpawnPoint> spawners;
     [SerializeField] float spawnRate = 1f;
-    EnemyPool enemyPool;
+
+    int spawnCount = 2;
 
     #endregion
 
@@ -23,11 +28,6 @@ public class SpawnManager : MonoBehaviour
 
     #region Private Methods
 
-    private void Awake()
-    {
-        enemyPool = GetComponent<EnemyPool>();
-    }
-
     private void Start()
     {
         StartEnemySpawning(spawnRate);
@@ -37,15 +37,28 @@ public class SpawnManager : MonoBehaviour
     {
         while (true)
         {
-            GameObject enemy = enemyPool.RequestEnemyObject(EnemyType.Enemy_goblin);
+            SpawnEnemies(spawnCount);
+            yield return new WaitForSeconds(spawnRate);
+        }
+    }
+
+    private void SpawnEnemies(int spawnCount)
+    {
+        for (int enemyIndex = 0; enemyIndex < spawnCount; ++enemyIndex)
+        {
+            GameObject enemy = EnemyPool.instance.RequestEnemyObject(EnemyType.Enemy_goblin_default);
 
             if (enemy != null)
             {
-                int randomSpawnerIndex = Random.Range(0, spawners.Count);
-                spawners[randomSpawnerIndex].SpawnEnemy(enemy);
+                SpawnNewEnemy(enemy);
             }
-            yield return new WaitForSeconds(spawnRate);
         }
+    }
+
+    private void SpawnNewEnemy(GameObject enemy)
+    {
+        int randomSpawnerIndex = Random.Range(0, spawners.Count);
+        spawners[randomSpawnerIndex].SpawnEnemy(enemy);
     }
 
     #endregion
@@ -61,7 +74,7 @@ public class SpawnManager : MonoBehaviour
     {
         StartCoroutine(EnemySpawnRoutine(spawnRate));
     }
-    
+
     public void EndEnemySpawning()
     {
         StopAllCoroutines();

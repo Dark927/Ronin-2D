@@ -4,10 +4,11 @@ using UnityEngine;
 
 public enum EnemyType
 {
-    Enemy_goblin = 0,
+    Enemy_goblin_default = 0,
+    Enemy_goblin_fast = 0,
 
     Enemy_firstIndex = 0,
-    Enemy_lastIndex = Enemy_goblin,
+    Enemy_lastIndex = Enemy_goblin_fast,
     Enemy_typesCount = Enemy_lastIndex + 1
 }
 
@@ -19,17 +20,16 @@ public class Enemy : MonoBehaviour
 
     #region Parameters 
 
-    [Space]
     [Header("Stats Settings")]
     [Space]
 
     [SerializeField] EnemyData stats;
 
-
     float _actualHP;
     float _actualSpeed;
     float _actualDamage;
     bool _isDead = false;
+
 
     [Space]
     [Header("Main Settings")]
@@ -39,8 +39,8 @@ public class Enemy : MonoBehaviour
     int lookDirectionX = 1;
     bool isLookRight = true;
     bool activeSwapSide = false;
-
     bool isAttacking = false;
+
 
     [Space]
     [Header("Configuration Settings")]
@@ -48,6 +48,8 @@ public class Enemy : MonoBehaviour
 
     [SerializeField] EnemyWeapon weapon;
     EnemyStatesController statesController;
+    EnemyCollisionsController collisionsController;
+
     Rigidbody2D rb;
     DamageFlash damageFlash;
     GameObject targetPlayer;
@@ -64,6 +66,7 @@ public class Enemy : MonoBehaviour
     private void Awake()
     {
         statesController = GetComponent<EnemyStatesController>();
+        collisionsController = GetComponent<EnemyCollisionsController>();
         rb = GetComponent<Rigidbody2D>();
         damageFlash = GetComponent<DamageFlash>();
     }
@@ -71,12 +74,15 @@ public class Enemy : MonoBehaviour
     private void Start()
     {
         targetPlayer = FindObjectOfType<PlayerController>().gameObject;
+        ConfigureStats();
+    }
 
-        _actualHP = stats.basicHP;
-        _actualSpeed = stats.basicSpeed;
-        _actualDamage = stats.basicDamage;
-
-        weapon.SetReloadTime(stats.attackReloadTime);
+    private void OnEnable()
+    {
+        if (_isDead)
+        {
+            Arise();
+        }
     }
 
     private void Update()
@@ -88,11 +94,30 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    private void Arise()
+    {
+        _isDead = false;
+        statesController.ResetState();
+        rb.simulated = true;
+
+        ConfigureStats();
+    }
+
+    private void ConfigureStats()
+    {
+        _actualHP = stats.basicHP;
+        _actualSpeed = stats.basicSpeed;
+        _actualDamage = stats.basicDamage;
+
+        weapon.SetReloadTime(stats.attackReloadTime);
+    }
+
     private void Attack()
     {
         if (!isAttacking && weapon.ReadyToAttack())
         {
             isAttacking = true;
+
             weapon.ChargeAttack();
             statesController.SetAttackState();
         }
@@ -115,7 +140,7 @@ public class Enemy : MonoBehaviour
 
         if (GameManager.instance.IsBlockedInput())
         {
-            _actualSpeed = 0;
+            StopMovement();
             return;
         }
 
@@ -123,9 +148,20 @@ public class Enemy : MonoBehaviour
 
         if (!activeSwapSide)
         {
-            _actualSpeed = weapon.IsInAttackRange() ? 0 : stats.basicSpeed;
-            _actualSpeed = IsNearPlayer() ? 0 : _actualSpeed;
+            if(weapon.IsInAttackRange() || IsNearPlayer() || isAttacking)
+            {
+                StopMovement();
+            }
+            else
+            {
+                _actualSpeed = stats.basicSpeed;
+            }
         }
+    }
+
+    private void StopMovement()
+    {
+        _actualSpeed = 0;
     }
 
     private void CalculatePosition()
@@ -155,7 +191,7 @@ public class Enemy : MonoBehaviour
 
     IEnumerator StopMovementDelay(float stopTime, bool isSideSwap = false)
     {
-        _actualSpeed = 0;
+        StopMovement();
         activeSwapSide = true;
 
         yield return new WaitForSeconds(stopTime);
@@ -174,6 +210,15 @@ public class Enemy : MonoBehaviour
     {
         transform.localScale = new Vector2(transform.localScale.x * -1, transform.localScale.y);
         isLookRight = !isLookRight;
+    }
+
+    private void Die()
+    {
+        damageFlash.Flash(true);
+
+        _isDead = true;
+        statesController.SetDeadState();
+        rb.simulated = false;
     }
 
     #endregion
@@ -222,11 +267,7 @@ public class Enemy : MonoBehaviour
 
         if (_actualHP <= 0)
         {
-            damageFlash.Flash(true);
-
-            _isDead = true;
-            statesController.SetDeadState();
-            rb.simulated = false;
+            Die();
         }
 
         rb.AddForce(Vector2.right * lookDirectionX * pushForce, ForceMode2D.Impulse);

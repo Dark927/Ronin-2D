@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Events/GameEvent")]
-public class GameEvent : ScriptableObject
+[CreateAssetMenu(menuName = "Events/GameEvent Data")]
+public class GameEventData : ScriptableObject
 {
     // --------------------------------------------------------------------------
     // Parameters
