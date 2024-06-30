@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 144d4c24d43818a4e95f0aafaf4efefe, type: 3}
   m_Name: RoninData
   m_EditorClassIdentifier: 
-  basicHP: 25
+  basicHP: 20
   basicSpeed: 4
   basicJumpForce: 5.5

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   basicHP: 5
-  basicSpeed: 3.5
+  minSpeed: 2.5
+  maxSpeed: 4
   basicDamage: 2
   attackReloadTime: 1.5

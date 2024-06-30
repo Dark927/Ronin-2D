@@ -328,6 +328,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stats: {fileID: 11400000, guid: 66959877d7685bd44921613f0e5ee41a, type: 2}
   sideSwapDelay: 0.15
+  runAwayOffsetX: 20
+  runAwayTimeDelay: 2
+  runAwayDistance: 10
   weapon: {fileID: 1660775161}
 --- !u!114 &-312111009665105070
 MonoBehaviour:

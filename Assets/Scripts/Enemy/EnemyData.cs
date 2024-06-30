@@ -10,7 +10,11 @@ public class EnemyData : ScriptableObject
 
     public EnemyType type;
     public float basicHP;
-    public float basicSpeed;
+
+    [Space]
+
+    public float minSpeed;
+    public float maxSpeed;
 
     [Space]
     [Header("Attack Settings")]

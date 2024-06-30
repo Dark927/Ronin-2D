@@ -26,7 +26,7 @@ public class EnemyPool : MonoBehaviour
 
     private void Start()
     {
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
         }
@@ -44,7 +44,7 @@ public class EnemyPool : MonoBehaviour
 
         pool = new List<List<Enemy>>();
 
-        foreach(EnemySpawnData data in spawnDataList)
+        foreach (EnemySpawnData data in spawnDataList)
         {
             PushSpawnData(data);
         }
@@ -120,20 +120,29 @@ public class EnemyPool : MonoBehaviour
         PushSpawnData(data);
     }
 
-    public List<Collider2D> GetAllColliders()
+    public List<T> GetAllComponents<T>(bool searchInactive = false) where T : Component
     {
-        List<Collider2D> allColliders = new();
+        List<T> allComponents = new();
 
         for (int enemyTypeIndex = 0; enemyTypeIndex < pool.Count; ++enemyTypeIndex)
         {
             for (int enemyIndex = 0; enemyIndex < pool[enemyTypeIndex].Count; ++enemyIndex)
             {
-                Collider2D enemyCollider = pool[enemyTypeIndex][enemyIndex].GetComponent<Collider2D>();
-                allColliders.Add(enemyCollider);
+                GameObject currentEnemy = pool[enemyTypeIndex][enemyIndex].gameObject;
+
+                if (currentEnemy.gameObject.activeInHierarchy || searchInactive)
+                {
+                    T enemyComponent = currentEnemy.GetComponent<T>();
+
+                    if (enemyComponent != null)
+                    {
+                        allComponents.Add(enemyComponent);
+                    }
+                }
             }
         }
-
-        return allColliders;
+        return allComponents;
     }
+
     #endregion
 }

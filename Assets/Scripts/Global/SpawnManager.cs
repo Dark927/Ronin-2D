@@ -16,8 +16,7 @@ public class SpawnManager : MonoBehaviour
 
     [SerializeField] List<SpawnPoint> spawners;
     [SerializeField] float spawnRate = 1f;
-
-    int spawnCount = 2;
+    [SerializeField] int spawnCount = 2;
 
     #endregion
 

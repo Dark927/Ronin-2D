@@ -37,7 +37,7 @@ public class EnemyCollisionsController : MonoBehaviour
     {
         if (enemyCollidersList.Count == 0)
         {
-            enemyCollidersList = EnemyPool.instance.GetAllColliders();
+            enemyCollidersList = EnemyPool.instance.GetAllComponents<Collider2D>(true);
         }
 
         ConfigureCollisions();
@@ -45,12 +45,14 @@ public class EnemyCollisionsController : MonoBehaviour
 
     private void ConfigureCollisions()
     {
-        if ((currentEnemy.ActualSpeed < minSpeedToIgnore) && !ignoringCollisions)
+        bool blockCollisions = (currentEnemy.ActualSpeed < minSpeedToIgnore) || (GameManager.instance.IsBlockedInput());
+
+        if (blockCollisions && !ignoringCollisions)
         {
             ignoringCollisions = true;
             IgnoreCollisions(ignoringCollisions);
         }
-        else if ((currentEnemy.ActualSpeed > minSpeedToIgnore) && ignoringCollisions)
+        else if (!blockCollisions && ignoringCollisions)
         {
             ignoringCollisions = false;
             IgnoreCollisions(ignoringCollisions);

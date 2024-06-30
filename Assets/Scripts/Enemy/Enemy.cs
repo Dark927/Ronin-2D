@@ -25,7 +25,8 @@ public class Enemy : MonoBehaviour
 
     [SerializeField] EnemyData _stats;
 
-    float _actualSpeed;
+    float _currentDefaultSpeed;
+    float _speed;
     float _actualDamage;
     bool _isDead = false;
 
@@ -43,13 +44,21 @@ public class Enemy : MonoBehaviour
     Coroutine activeSideSwap = null;
 
     [Space]
+    [Header("Run away Settings")]
+    [Space]
+
+    [SerializeField] float runAwayOffsetX = 20f;
+    [SerializeField] float runAwayTimeDelay = 2f;
+    [SerializeField] float runAwayDistance = 10f;
+
+
+    [Space]
     [Header("Configuration Settings")]
     [Space]
 
     [SerializeField] EnemyWeapon weapon;
-    EnemyStatesController statesController;
-    EnemyCollisionsController collisionsController;
 
+    EnemyStatesController statesController;
     Rigidbody2D rb;
     GameObject targetPlayer;
 
@@ -65,7 +74,6 @@ public class Enemy : MonoBehaviour
     private void Awake()
     {
         statesController = GetComponent<EnemyStatesController>();
-        collisionsController = GetComponent<EnemyCollisionsController>();
         rb = GetComponent<Rigidbody2D>();
     }
 
@@ -87,13 +95,17 @@ public class Enemy : MonoBehaviour
     {
         // Configure checking input conditions
 
-        if (GameManager.instance.IsBlockedInput() || _isDead || isStunned)
+        if (_isDead || isStunned)
         {
             StopMovement();
             return;
         }
+        else if (GameManager.instance.IsBlockedInput())
+        {
+            return;
+        }
 
-        Movement();
+        FollowPlayer();
         Attack();
     }
 
@@ -108,7 +120,9 @@ public class Enemy : MonoBehaviour
 
     private void ConfigureStats()
     {
-        _actualSpeed = _stats.basicSpeed;
+        _currentDefaultSpeed = Random.Range(_stats.minSpeed, _stats.maxSpeed);
+
+        _speed = _currentDefaultSpeed;
         _actualDamage = _stats.basicDamage;
 
         weapon.SetReloadTime(_stats.attackReloadTime);
@@ -125,13 +139,13 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void Movement()
+    private void FollowPlayer()
     {
         ConfigureSpeed();
 
         if (!isAttacking)
         {
-            CalculatePosition();
+            CalculatePosition(targetPlayer.transform.position);
             ConfigureLookDirection();
         }
     }
@@ -148,20 +162,20 @@ public class Enemy : MonoBehaviour
             }
             else
             {
-                _actualSpeed = _stats.basicSpeed;
+                _speed = _currentDefaultSpeed;
             }
         }
     }
 
     private void StopMovement()
     {
-        _actualSpeed = 0;
+        _speed = 0;
     }
 
-    private void CalculatePosition()
+    private void CalculatePosition(Vector2 targetPosition)
     {
-        _lookDirectionX = (targetPlayer.transform.position.x - transform.position.x) > 0 ? 1 : -1;
-        Vector2 movement = Vector2.right * _lookDirectionX * _actualSpeed * Time.deltaTime;
+        _lookDirectionX = (targetPosition.x - transform.position.x) > 0 ? 1 : -1;
+        Vector2 movement = Vector2.right * _lookDirectionX * _speed * Time.deltaTime;
 
         transform.Translate(movement);
     }
@@ -181,11 +195,10 @@ public class Enemy : MonoBehaviour
         if (!isSwapping)
         {
             activeSideSwap = StartCoroutine(BecomeStunnedRoutine(sideSwapDelay, true));
-            SwapLookDirection();
         }
     }
 
-    IEnumerator BecomeStunnedRoutine(float time, bool swappingSide = false)
+    private IEnumerator BecomeStunnedRoutine(float time, bool swappingSide = false)
     {
         StopMovement();
         isStunned = true;
@@ -193,11 +206,38 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSeconds(time);
 
         isStunned = false;
-        _actualSpeed = _stats.basicSpeed;
+        _speed = _currentDefaultSpeed;
 
         if (swappingSide)
         {
+            SwapLookDirection();
             activeSideSwap = null;
+        }
+    }
+
+    private IEnumerator RunAwayRoutine(Vector2 offset, float runAwayTimeDelay = 1f)
+    {
+        StopMovement();
+
+        yield return new WaitForSeconds(runAwayTimeDelay);
+
+        Vector2 startPosition = transform.position;
+        _speed = _currentDefaultSpeed;
+
+        while (true)
+        {
+            bool farFromPlayer = Mathf.Abs(transform.position.x - targetPlayer.transform.position.x) > runAwayDistance;
+
+            if (farFromPlayer)
+            {
+                gameObject.SetActive(false);
+                break;
+            }
+
+            CalculatePosition(startPosition + offset);
+            ConfigureLookDirection();
+
+            yield return null;
         }
     }
 
@@ -224,7 +264,7 @@ public class Enemy : MonoBehaviour
 
     public float ActualSpeed
     {
-        get { return _actualSpeed; }
+        get { return _speed; }
     }
 
     public bool IsDead
@@ -273,6 +313,22 @@ public class Enemy : MonoBehaviour
     {
         weapon.Attack(_actualDamage);
         isAttacking = false;
+    }
+
+    public void RunAway()
+    {
+        if (!gameObject.activeInHierarchy || _isDead)
+        {
+            return;
+        }
+
+        StopAllCoroutines();
+        isStunned = false;
+
+        int runAwayDirection = (Random.Range(0, 2) == 0) ? 1 : -1;
+        Vector2 runAwayOffset = new((runAwayOffsetX * runAwayDirection), transform.position.y);
+
+        StartCoroutine(RunAwayRoutine(runAwayOffset, runAwayTimeDelay));
     }
 
     #endregion

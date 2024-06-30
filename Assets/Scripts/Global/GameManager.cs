@@ -35,6 +35,11 @@ public class GameManager : MonoBehaviour
 
     int _kills = 0;
 
+    // ---
+    // Game Over parameters
+    // ---
+
+    float gameOverPanelDelay = 4f;
 
     #endregion
 
@@ -79,6 +84,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private IEnumerator GameOverPanelDelay(GameObject GameOverPanel, float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        GameOverPanel.SetActive(true);
+    }
+
+    private void GameOverPanelActivation()
+    {
+        GameOverUI gameOverPanel = FindObjectOfType<GameOverUI>(true);
+
+        if (gameOverPanel != null)
+        {
+            StartCoroutine(GameOverPanelDelay(gameOverPanel.gameObject, gameOverPanelDelay));
+        }
+    }
+
     #endregion
 
 
@@ -114,16 +136,28 @@ public class GameManager : MonoBehaviour
         _gameOver = true;
         _blockedInput = true;
 
-        foreach(GameObject element in gameplayElementsUI)
+        foreach (GameObject element in gameplayElementsUI)
         {
             element.SetActive(false);
         }
+
+        GameOverPanelActivation();
     }
 
     public void AddKill()
     {
         _kills++;
         KillsCounterUI.instance.UpdateKills(_kills);
+    }
+
+    public void EnemyRunAway()
+    {
+        List<Enemy> activeEnemiesList = EnemyPool.instance.GetAllComponents<Enemy>();
+
+        foreach(Enemy enemy in activeEnemiesList)
+        {
+            enemy.RunAway();
+        }
     }
 
     #endregion
